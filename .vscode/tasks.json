@@ -1,86 +1,100 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"label": "Format All C# Files",
-			"type": "shell",
-			"command": "dotnet",
-			"args": [
-				"format"
-			],
-			"problemMatcher": []
-		},
-		{
-			"label": "custom: build Debug",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"build",
-				"${workspaceFolder}/TeamsBotSolution.sln",
-				"--configuration",
-				"Debug",
-				"/p:Platform=Any CPU"
-			],
-			"problemMatcher": "$msCompile",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"detail": "Build the .NET project in Debug mode"
-		},
-		{
-			"label": "custom: build Debug x64",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"build",
-				"${workspaceFolder}/TeamsBotSolution.sln",
-				"--configuration",
-				"Debug",
-				"/p:Platform=x64"
-			],
-			"problemMatcher": "$msCompile",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"detail": "Build the .NET project in Debug x64 mode"
-		},
-		{
-			"label": "custom: build Release",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"build",
-				"${workspaceFolder}/TeamsBotSolution.sln",
-				"--configuration",
-				"Release",
-				"/p:Platform=Any CPU"
-			],
-			"problemMatcher": "$msCompile",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"detail": "Build the .NET project in Release mode"
-		},
-		{
-			"label": "custom: build Release x64",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"build",
-				"${workspaceFolder}/TeamsBotSolution.sln",
-				"--configuration",
-				"Release",
-				"/p:Platform=x64"
-			],
-			"problemMatcher": "$msCompile",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"detail": "Build the .NET project in Release x64 mode"
-		}
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Format All C# Files",
+      "type": "shell",
+      "command": "dotnet",
+      "args": ["format"],
+      "problemMatcher": []
+    },
+    {
+      "label": "Format All Files",
+      "type": "shell",
+      "command": "prettier",
+      "args": [
+        "--write",
+        "**/*.js",
+        "**/*.ts",
+        "**/*.css",
+        "**/*.html",
+        "**/*.json",
+        "**/*.xml"
+      ],
+      "problemMatcher": []
+      //Need to install prettier for the same ( npm install -g prettier )
+    },
+    {
+      "label": "custom: build Debug",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/TeamsBotSolution.sln",
+        "--configuration",
+        "Debug",
+        "/p:Platform=Any CPU"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "detail": "Build the .NET project in Debug mode"
+    },
+    {
+      "label": "custom: build Debug x64",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/TeamsBotSolution.sln",
+        "--configuration",
+        "Debug",
+        "/p:Platform=x64"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "detail": "Build the .NET project in Debug x64 mode"
+    },
+    {
+      "label": "custom: build Release",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/TeamsBotSolution.sln",
+        "--configuration",
+        "Release",
+        "/p:Platform=Any CPU"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "detail": "Build the .NET project in Release mode"
+    },
+    {
+      "label": "custom: build Release x64",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/TeamsBotSolution.sln",
+        "--configuration",
+        "Release",
+        "/p:Platform=x64"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "detail": "Build the .NET project in Release x64 mode"
+    }
+  ]
 }
