@@ -5,24 +5,24 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 
 namespace TeamsBotApi.Controllers
 {
-    [Route("api/messages")]
-    [ApiController]
-    public class BotController : ControllerBase
-    {
-        private readonly IBot _bot;
-        private readonly IBotFrameworkHttpAdapter _adapter;
+	[Route("api/messages")]
+	[ApiController]
+	public class BotController : ControllerBase
+	{
+		private readonly IBot _bot;
+		private readonly IBotFrameworkHttpAdapter _adapter;
 
-        public BotController(IBot bot, IBotFrameworkHttpAdapter adapter)
-        {
-            _bot = bot;
-            _adapter = adapter;
-        }
+		public BotController(IBot bot, IBotFrameworkHttpAdapter adapter)
+		{
+			_bot = bot;
+			_adapter = adapter;
+		}
 
-        [HttpPost]
-        public async Task PostAsync()
-        {
-            await _adapter.ProcessAsync(Request, Response, _bot);
-        }
+		[HttpPost]
+		public async Task PostAsync()
+		{
+			await _adapter.ProcessAsync(Request, Response, _bot);
+		}
 
-    }
+	}
 }

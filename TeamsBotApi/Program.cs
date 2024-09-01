@@ -19,8 +19,8 @@ app.MapControllers();
 
 app.Map("/welcome", async context =>
 {
-    context.Response.ContentType = "application/json";
-    await context.Response.WriteAsync("{\"message\": \"Welcome to the Teams Bot API. Please specify a valid endpoint.\"}");
+	context.Response.ContentType = "application/json";
+	await context.Response.WriteAsync("{\"message\": \"Welcome to the Teams Bot API. Please specify a valid endpoint.\"}");
 });
 
 app.Run();
