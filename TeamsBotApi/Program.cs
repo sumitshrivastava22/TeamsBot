@@ -9,7 +9,7 @@ builder.Services.AddSingleton<ConversationState>();
 builder.Services.AddSingleton<UserState>();
 
 builder.Services.AddControllers();
-builder.Services.AddSingleton<IBotFrameworkHttpAdapter, BotFrameworkHttpAdapter>();   
+builder.Services.AddSingleton<IBotFrameworkHttpAdapter, BotFrameworkHttpAdapter>();
 builder.Services.AddTransient<IBot, TeamsBot>();
 
 var app = builder.Build();

@@ -2,6 +2,15 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "Format All C# Files",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"format"
+			],
+			"problemMatcher": []
+		},
+		{
 			"label": "custom: build Debug",
 			"command": "dotnet",
 			"type": "process",
@@ -18,24 +27,6 @@
 				"isDefault": true
 			},
 			"detail": "Build the .NET project in Debug mode"
-		},
-		{
-			"label": "custom: build Debug x86",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"build",
-				"${workspaceFolder}/TeamsBotSolution.sln",
-				"--configuration",
-				"Debug",
-				"/p:Platform=x86"
-			],
-			"problemMatcher": "$msCompile",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"detail": "Build the .NET project in Debug x86 mode"
 		},
 		{
 			"label": "custom: build Debug x64",
@@ -74,24 +65,6 @@
 			"detail": "Build the .NET project in Release mode"
 		},
 		{
-			"label": "custom: build Release x86",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"build",
-				"${workspaceFolder}/TeamsBotSolution.sln",
-				"--configuration",
-				"Release",
-				"/p:Platform=x86"
-			],
-			"problemMatcher": "$msCompile",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"detail": "Build the .NET project in Release x86 mode"
-		},
-		{
 			"label": "custom: build Release x64",
 			"command": "dotnet",
 			"type": "process",
@@ -108,23 +81,6 @@
 				"isDefault": true
 			},
 			"detail": "Build the .NET project in Release x64 mode"
-		},
-		{
-			"label": "custom: build all configurations",
-			"dependsOn": [
-				"custom: build Debug",
-				"custom: build Debug x86",
-				"custom: build Debug x64",
-				"custom: build Release",
-				"custom: build Release x86",
-				"custom: build Release x64"
-			],
-			"dependsOrder": "sequence",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"detail": "Build the .NET project in all available configurations"
 		}
 	]
 }

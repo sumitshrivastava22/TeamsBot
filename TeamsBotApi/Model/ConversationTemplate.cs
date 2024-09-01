@@ -4,7 +4,7 @@ using System.Text.Json;
 namespace TeamsBotApi.Model;
 
 public class ConversationTemplate
-{    
+{
     public string? TemplateName { get; set; }
 
     public List<QuestionTemplate>? Questions { get; set; }

@@ -12,13 +12,13 @@ namespace TeamsBotApi.Controllers
         private readonly IBot _bot;
         private readonly IBotFrameworkHttpAdapter _adapter;
 
-        public BotController(IBot bot,IBotFrameworkHttpAdapter adapter)
+        public BotController(IBot bot, IBotFrameworkHttpAdapter adapter)
         {
             _bot = bot;
-            _adapter = adapter;            
+            _adapter = adapter;
         }
 
-        [HttpPost] 
+        [HttpPost]
         public async Task PostAsync()
         {
             await _adapter.ProcessAsync(Request, Response, _bot);
