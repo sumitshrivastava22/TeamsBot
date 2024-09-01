@@ -1,0 +1,4 @@
+{
+	"Platform": "x64", //["Any CPU", "x86", "x64"]
+	"Configuration": "Release", //["Debug", "Release"]
+}
