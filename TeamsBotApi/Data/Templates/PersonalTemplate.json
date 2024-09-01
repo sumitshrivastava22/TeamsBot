@@ -1,0 +1,18 @@
+{
+    "TemplateName": "Personal Details",
+    "Questions": [
+        {
+            "QuestionText": "What is your Name ?",
+            "ResponseType": "text"
+        },
+        {
+            "QuestionText": "What is your Age ?",
+            "ResponseType": "number"
+        },
+        {
+            "QuestionText": "What is your current location ?",
+            "ResponseType": "options",
+            "Options": ["Pune", "Mumbai", "Banglore", "Other"]
+        }
+    ]
+}
