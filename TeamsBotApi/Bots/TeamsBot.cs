@@ -31,41 +31,82 @@ public class TeamsBot : ActivityHandler
 		await _conversationState.SaveChangesAsync(turnContext, false, cancellationToken);
 	}
 
-	private static async Task SendResponse(ITurnContext<IMessageActivity> turnContext, string userMessage, ConversationData conversationData, CancellationToken cancellationToken)
+	private static async Task SendResponse(
+	ITurnContext<IMessageActivity> turnContext,
+	string userMessage,
+	ConversationData conversationData,
+	CancellationToken cancellationToken)
 	{
-		var message = CreateMessage("Please select the Template", Templates.TemplatesList);
+		IMessageActivity message;
+
+		// If there's an active conversation template
 		if (conversationData.conversationTemplate != null)
 		{
-			QuestionResponse response = new QuestionResponse {Id = conversationData.conversationTemplate.Questions[conversationData.ActiveQuestion].Id, Response= userMessage};
-			conversationData.conversationResponse.QuestionResponses.Add(response);
-			ConversationTemplate conversationTemplate = conversationData.conversationTemplate;
-			if (conversationData.ActiveQuestion + 1 < conversationTemplate.Questions.Count)
-			{
-				var question = conversationTemplate.Questions[conversationData.ActiveQuestion + 1];
-				message = CreateMessage(question.QuestionText, question.Options);
-				conversationData.ActiveQuestion = conversationData.ActiveQuestion + 1;
-			}
-			else
-			{
-				message = CreateMessage($"Conversation completed for template {conversationData.conversationTemplate.TemplateName}");
-				string responseData = JsonSerializer.Serialize<ConversationResponse>(conversationData.conversationResponse);
-				File.WriteAllText($"../TeamsBotApi/Responses/{conversationData.conversationTemplate.TemplateName}.json", responseData);
-				conversationData.conversationTemplate = null;
-				conversationData.ActiveQuestion = 0;				
-			}
+			HandleActiveConversation(userMessage, conversationData);
+			message = GetNextMessage(conversationData);
 		}
-		else if (Templates.TemplatesList.Contains(userMessage))
+		else if (Templates.TemplatesList.Contains(userMessage)) // If user selects a valid template
 		{
-			ConversationTemplate conversationTemplate = Templates.TemplatesDict[userMessage];
-			conversationData.conversationTemplate = conversationTemplate;
-			conversationData.conversationResponse = new ConversationResponse{TemplateName = userMessage, QuestionResponses = new List<QuestionResponse>()};
-			conversationData.ActiveQuestion = 0;
-			var question = conversationTemplate.Questions[0];
-			message = CreateMessage(question.QuestionText, question.Options);
+			message = InitializeConversation(userMessage, conversationData);			
+		}
+		else
+		{
+			message = CreateMessage("Please select the Template", Templates.TemplatesList);
 		}
 
 		await turnContext.SendActivityAsync(message, cancellationToken);
+	}
 
+	private static void HandleActiveConversation(string userMessage, ConversationData conversationData)
+	{
+		// Record the user's response
+		var response = new QuestionResponse
+		{
+			Id = conversationData.conversationTemplate.Questions[conversationData.ActiveQuestion].Id,
+			Response = userMessage
+		};
+		conversationData.conversationResponse.QuestionResponses.Add(response);
+	}
+
+	private static IMessageActivity GetNextMessage(ConversationData conversationData)
+	{
+		var conversationTemplate = conversationData.conversationTemplate;
+
+		// Check if there are more questions
+		if (conversationData.ActiveQuestion + 1 < conversationTemplate.Questions.Count)
+		{
+			var nextQuestion = conversationTemplate.Questions[++conversationData.ActiveQuestion];
+			return CreateMessage(nextQuestion.QuestionText, nextQuestion.Options);
+		}
+
+		// No more questions, finalize the conversation
+		FinalizeConversation(conversationData);
+		return CreateMessage($"Conversation completed for template {conversationTemplate.TemplateName}");
+	}
+
+	private static void FinalizeConversation(ConversationData conversationData)
+	{
+		var responseData = JsonSerializer.Serialize(conversationData.conversationResponse);
+		var filePath = $"../TeamsBotApi/Responses/{conversationData.conversationTemplate.TemplateName}.json";
+		File.WriteAllText(filePath, responseData);
+
+		// Reset conversation data
+		conversationData.conversationTemplate = null;
+		conversationData.ActiveQuestion = 0;
+	}
+
+	private static IMessageActivity InitializeConversation(string userMessage, ConversationData conversationData)
+	{
+		var conversationTemplate = Templates.TemplatesDict[userMessage];
+		conversationData.conversationTemplate = conversationTemplate;
+		conversationData.conversationResponse = new ConversationResponse
+		{
+			TemplateName = userMessage,
+			QuestionResponses = new List<QuestionResponse>()
+		};
+		conversationData.ActiveQuestion = 0;		
+		var nextQuestion = conversationTemplate.Questions[conversationData.ActiveQuestion];
+		return CreateMessage(nextQuestion.QuestionText, nextQuestion.Options);
 	}
 
 	private static IMessageActivity CreateMessage(string title, List<string>? options = null)
