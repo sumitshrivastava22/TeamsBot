@@ -8,6 +8,13 @@ public class ConversationTemplate
 {
 	public string? TemplateName { get; set; }
 
+	public List<SectionTemplate>? Sections { get; set; }
+}
+
+public class SectionTemplate
+{
+	public string? SectionName { get; set; }
+
 	public List<QuestionTemplate>? Questions { get; set; }
 }
 

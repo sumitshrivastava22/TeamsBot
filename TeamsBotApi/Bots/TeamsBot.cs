@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Bot.Builder;
@@ -37,6 +38,37 @@ public class TeamsBot : ActivityHandler
 	ConversationData conversationData,
 	CancellationToken cancellationToken)
 	{
+		IMessageActivity message = null;
+
+		if (conversationData.conversationTemplate != null || Templates.TemplatesList.Contains(userMessage))
+			message = RunTemplateConversation(turnContext, userMessage, conversationData, cancellationToken);
+		else
+		{
+			switch(userMessage)
+			{
+				case "Create Excel":
+					message = CreateMessage("Functionality to be implemented");
+					break;
+
+				case "Add new survey Data":
+					message = CreateMessage("Please Select Template", Templates.TemplatesList);
+					break;
+
+				default:
+					message = CreateMessage("Welcome Card", "Please Select an Option", ["Add new survey Data", "Create Excel"]);
+					break;
+			}			
+		}
+
+		await turnContext.SendActivityAsync(message, cancellationToken);	
+	}
+
+	private static IMessageActivity RunTemplateConversation(
+	ITurnContext<IMessageActivity> turnContext,
+	string userMessage,
+	ConversationData conversationData,
+	CancellationToken cancellationToken)
+	{
 		IMessageActivity message;
 
 		// If there's an active conversation template
@@ -54,45 +86,7 @@ public class TeamsBot : ActivityHandler
 			message = CreateMessage("Please select the Template", Templates.TemplatesList);
 		}
 
-		await turnContext.SendActivityAsync(message, cancellationToken);
-	}
-
-	private static void HandleActiveConversation(string userMessage, ConversationData conversationData)
-	{
-		// Record the user's response
-		var response = new QuestionResponse
-		{
-			Id = conversationData.conversationTemplate.Questions[conversationData.ActiveQuestion].Id,
-			Response = userMessage
-		};
-		conversationData.conversationResponse.QuestionResponses.Add(response);
-	}
-
-	private static IMessageActivity GetNextMessage(ConversationData conversationData)
-	{
-		var conversationTemplate = conversationData.conversationTemplate;
-
-		// Check if there are more questions
-		if (conversationData.ActiveQuestion + 1 < conversationTemplate.Questions.Count)
-		{
-			var nextQuestion = conversationTemplate.Questions[++conversationData.ActiveQuestion];
-			return CreateMessage(nextQuestion.QuestionText, nextQuestion.Options);
-		}
-
-		// No more questions, finalize the conversation
-		FinalizeConversation(conversationData);
-		return CreateMessage($"Conversation completed for template {conversationTemplate.TemplateName}");
-	}
-
-	private static void FinalizeConversation(ConversationData conversationData)
-	{
-		var responseData = JsonSerializer.Serialize(conversationData.conversationResponse);
-		var filePath = $"../TeamsBotApi/Responses/{conversationData.conversationTemplate.TemplateName}.json";
-		File.WriteAllText(filePath, responseData);
-
-		// Reset conversation data
-		conversationData.conversationTemplate = null;
-		conversationData.ActiveQuestion = 0;
+		return message;
 	}
 
 	private static IMessageActivity InitializeConversation(string userMessage, ConversationData conversationData)
@@ -102,18 +96,99 @@ public class TeamsBot : ActivityHandler
 		conversationData.conversationResponse = new ConversationResponse
 		{
 			TemplateName = userMessage,
-			QuestionResponses = new List<QuestionResponse>()
+			SectionResponses = new List<SectionResponse>()
 		};
-		conversationData.ActiveQuestion = 0;		
-		var nextQuestion = conversationTemplate.Questions[conversationData.ActiveQuestion];
-		return CreateMessage(nextQuestion.QuestionText, nextQuestion.Options);
+		return InitializeSection(userMessage, conversationData);
 	}
 
-	private static IMessageActivity CreateMessage(string title, List<string>? options = null)
+	private static IMessageActivity InitializeSection(string userMessage, ConversationData conversationData)
+	{
+		conversationData.ActiveSection = 0;
+		conversationData.sectionTemplate = conversationData.conversationTemplate.Sections[0];
+
+		conversationData.sectionResponse = new SectionResponse
+		{
+			SectionName = conversationData.sectionTemplate.SectionName,
+			QuestionResponses = new List<QuestionResponse>()
+		};
+
+		conversationData.ActiveQuestion = 0;		
+		var nextQuestion = conversationData.sectionTemplate.Questions[conversationData.ActiveQuestion];
+		return CreateMessage(nextQuestion.QuestionText, conversationData.conversationTemplate.Sections[conversationData.ActiveSection].SectionName, nextQuestion.Options);
+	}
+
+	private static void HandleActiveConversation(string userMessage, ConversationData conversationData)
+	{
+		// Record the user's response
+		var response = new QuestionResponse
+		{
+			Id = conversationData.sectionTemplate.Questions[conversationData.ActiveQuestion].Id,
+			Response = userMessage
+		};
+		conversationData.sectionResponse.QuestionResponses.Add(response);
+	}
+
+	private static IMessageActivity GetNextMessage(ConversationData conversationData)
+	{
+		var sectionTemplate = conversationData.sectionTemplate;
+
+		// Check if there are more questions
+		if (conversationData.ActiveQuestion + 1 < sectionTemplate.Questions.Count)
+		{
+			var nextQuestion = sectionTemplate.Questions[++conversationData.ActiveQuestion];
+			return CreateMessage(nextQuestion.QuestionText, conversationData.conversationTemplate.Sections[conversationData.ActiveSection].SectionName, nextQuestion.Options);
+		}
+
+		// No more questions, finalize the conversation
+		return FinalizeSection(conversationData);		
+	}
+
+	private static IMessageActivity FinalizeSection(ConversationData conversationData)
+	{
+		conversationData.conversationResponse.SectionResponses.Add(conversationData.sectionResponse);
+		conversationData.sectionResponse = new SectionResponse
+		{
+			SectionName = conversationData.sectionTemplate.SectionName,
+			QuestionResponses = new List<QuestionResponse>()
+		};		
+
+		if(conversationData.ActiveSection +1 < conversationData.conversationTemplate.Sections.Count)
+		{
+			conversationData.sectionTemplate = conversationData.conversationTemplate.Sections[++conversationData.ActiveSection];						
+			conversationData.ActiveQuestion = 0;		
+			var nextQuestion = conversationData.sectionTemplate.Questions[conversationData.ActiveQuestion];
+			return CreateMessage(nextQuestion.QuestionText, conversationData.conversationTemplate.Sections[conversationData.ActiveSection].SectionName, nextQuestion.Options);
+		}
+		else
+		{
+			return FinalizeConversation(conversationData);			
+		}
+	}	
+
+	private static IMessageActivity FinalizeConversation(ConversationData conversationData)
+	{
+		var responseData = JsonSerializer.Serialize(conversationData.conversationResponse);
+		var filePath = $"../TeamsBotApi/Responses/{conversationData.conversationTemplate.TemplateName}.json";
+		File.WriteAllText(filePath, responseData);
+
+		string templateName = conversationData.conversationTemplate.TemplateName;
+		// Reset conversation data
+		conversationData.conversationTemplate = null;
+		conversationData.ActiveQuestion = 0;
+		return CreateMessage($"Conversation completed for template {templateName}");
+	}	
+
+	private static IMessageActivity CreateMessage(string title, string subtitle, string text, List<string>? options = null)
 	{
 		if (options == null || options.Count == 0)
 		{
-			return MessageFactory.Text(title, title);
+			var heroCard = new HeroCard
+			{
+				Title = title,
+				Subtitle = subtitle,				
+				Text = text
+			};
+			return MessageFactory.Attachment(heroCard.ToAttachment());
 		}
 		else
 		{
@@ -127,10 +202,21 @@ public class TeamsBot : ActivityHandler
 			var heroCard = new HeroCard
 			{
 				Title = title,
+				Subtitle = subtitle,
 				Buttons = actionsList
 			};
 
 			return MessageFactory.Attachment(heroCard.ToAttachment());
 		}
+	}
+
+	private static IMessageActivity CreateMessage(string title, List<string>? options = null)
+	{
+		return CreateMessage(title, null, null, options);
+	}
+
+	private static IMessageActivity CreateMessage(string title, string subtitle, List<string>? options = null)
+	{
+		return CreateMessage(title, subtitle, null, options);
 	}
 }
