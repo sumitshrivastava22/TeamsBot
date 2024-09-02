@@ -4,7 +4,9 @@ namespace TeamsBotApi.Model;
 
 public class ConversationData
 {
-	public string? ActiveTemplate { get; set; }
-
 	public int ActiveQuestion { get; set; }
+
+	public ConversationTemplate? conversationTemplate{ get; set; }
+
+	public ConversationResponse conversationResponse { get; set; }
 }

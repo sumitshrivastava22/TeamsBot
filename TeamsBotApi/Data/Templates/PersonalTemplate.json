@@ -3,14 +3,17 @@
 	"Questions": [
 		{
 			"QuestionText": "What is your Name ?",
+			"Id": "Name",
 			"ResponseType": "text"
 		},
 		{
 			"QuestionText": "What is your Age ?",
+			"Id": "Age",
 			"ResponseType": "number"
 		},
 		{
 			"QuestionText": "What is your current location ?",
+			"Id": "CurrentLocation",
 			"ResponseType": "options",
 			"Options": ["Pune", "Mumbai", "Banglore", "Other"]
 		}

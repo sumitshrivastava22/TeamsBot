@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace TeamsBotApi.Model;
 
@@ -14,7 +15,9 @@ public class QuestionTemplate
 {
 	public string? QuestionText { get; set; }
 
+	public string? Id { get; set; }
+
 	public string? ResponseType { get; set; }
 
-	public List<string>? Options { get; set; }
+	public List<string>? Options { get; set; }		
 }
