@@ -2,7 +2,7 @@
 	"TemplateName": "Professional Details",
 	"Sections": [
 		{
-			"Sectionname": "DemographicSection",
+			"SectionName": "Demographic Section",
 			"Questions": [
 				{
 					"QuestionText": "How much Experience you have ?",
@@ -25,7 +25,7 @@
 			]
 		},
 		{
-			"Sectionname": "SurveySection",
+			"SectionName": "Survey Section",
 			"Questions": [
 				{
 					"QuestionText": "Rate the candidate in OOPs",

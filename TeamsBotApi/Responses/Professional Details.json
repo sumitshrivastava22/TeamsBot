@@ -1,1 +1,1 @@
-{"TemplateName":"Professional Details","QuestionResponses":[{"Id":"Experience","Response":"3-6 Years"},{"Id":"NoticePeriod","Response":"2 Month"},{"Id":"Relocation","Response":"Yes"}]}
+{"TemplateName":"Professional Details","SectionResponses":[{"SectionName":"Demographic Section","QuestionResponses":[{"Id":"Experience","Response":"6-10 Years"},{"Id":"NoticePeriod","Response":"3 Month"},{"Id":"Relocation","Response":"Yes"}]},{"SectionName":"Demographic Section","QuestionResponses":[{"Id":"OOPs","Response":"5"},{"Id":"OOPs","Response":"5"},{"Id":"OOPs","Response":"5"}]}]}

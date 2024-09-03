@@ -50,12 +50,16 @@ public class TeamsBot : ActivityHandler
 					message = CreateMessage("Functionality to be implemented");
 					break;
 
+				case "Go To Dashboard":
+					message = CreateMessage("Functionality to be implemented");
+					break;
+
 				case "Add new survey Data":
 					message = CreateMessage("Please Select Template", Templates.TemplatesList);
 					break;
 
 				default:
-					message = CreateMessage("Welcome Card", "Please Select an Option", ["Add new survey Data", "Create Excel"]);
+					message = CreateMessage("Welcome Card", "Please Select an Option", ["Add new survey Data", "Create Excel", "Go To Dashboard"]);
 					break;
 			}			
 		}
